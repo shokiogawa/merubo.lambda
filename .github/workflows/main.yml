@@ -1,10 +1,15 @@
 name: ecr push image
 
 on:
-  push:
+  pull_request:
+    branches:
+      - main
+    types:
+      - closed
 
 jobs:
   push:
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     # `permissions` を設定しないと OIDC が使えないので注意
     permissions:
