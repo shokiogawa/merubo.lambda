@@ -31,7 +31,7 @@ func main() {
 func HandleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 	slog.Info("HandlerRequest")
 	return events.APIGatewayProxyResponse{
-		Body:       "Hello",
+		Body:       "Hello Go",
 		Headers:    nil,
 		StatusCode: 200}, nil
 }
