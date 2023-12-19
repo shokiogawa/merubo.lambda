@@ -1,0 +1,8 @@
+FROM golang:1.21.5-alpine
+WORKDIR /go/merubo/
+COPY src ./src
+COPY go.mod go.sum ./
+RUN apk update && apk --no-cache add git
+RUN go mod tidy
+WORKDIR /go/merubo/src
+EXPOSE 80
