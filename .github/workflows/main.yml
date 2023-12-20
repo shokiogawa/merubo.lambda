@@ -29,10 +29,10 @@ jobs:
         id: login-ecr # outputs で参照するために id を設定
 
       # docker のセットアップ
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v2
-        with:
-          platforms: linux/arm64
+#      - name: Set up QEMU
+#        uses: docker/setup-qemu-action@v2
+#        with:
+#          platforms: linux/arm64
       # Docker イメージを build・push する
       - name: build and push docker image to ecr
         id: build-image
