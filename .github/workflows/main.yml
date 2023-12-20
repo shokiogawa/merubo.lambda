@@ -1,10 +1,15 @@
 name: ecr push image
 
 on:
-  push:
+  pull_request:
+    branches:
+      - main
+    types:
+      - closed
 
 jobs:
   push:
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     # `permissions` を設定しないと OIDC が使えないので注意
     permissions:
@@ -37,4 +42,4 @@ jobs:
         run: |
           docker build . --tag ${{ env.REGISTRY }}/${{ env.REPOSITORY }}:${{ env.IMAGE_TAG }}
           docker push ${{ env.REGISTRY }}/${{ env.REPOSITORY }}:${{ env.IMAGE_TAG }}
-#          aws lambda update-function-code --function-name meruboContact --image-uri 003468561805.dkr.ecr.ap-northeast-1.amazonaws.com/merubo-contact
+          aws lambda update-function-code --function-name meruboContact --image-uri 003468561805.dkr.ecr.ap-northeast-1.amazonaws.com/merubo-contact:latest

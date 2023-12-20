@@ -1,0 +1,15 @@
+name: ecr push image
+
+on:
+  push:
+
+jobs:
+  push:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      # Docker イメージを buildする
+      - name: build docker image
+        run: |
+          docker build .
