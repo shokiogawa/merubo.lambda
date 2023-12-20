@@ -42,4 +42,8 @@ jobs:
         run: |
           docker build . --tag ${{ env.REGISTRY }}/${{ env.REPOSITORY }}:${{ env.IMAGE_TAG }}
           docker push ${{ env.REGISTRY }}/${{ env.REPOSITORY }}:${{ env.IMAGE_TAG }}
+
+      - name: deploy lambda
+        id: deploy-lambda
+        run: |
           aws lambda update-function-code --function-name meruboContact --image-uri 003468561805.dkr.ecr.ap-northeast-1.amazonaws.com/merubo-contact:latest
