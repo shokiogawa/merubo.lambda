@@ -1,10 +1,10 @@
 package main
 
 import (
-	"context"
-	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
+	"github.com/labstack/echo/v4"
 	"log/slog"
+	"os"
 )
 
 // 参考
@@ -14,24 +14,21 @@ import (
 
 func init() {
 	slog.Info("コールドスタート")
-	//e := echo.New()
-	//e.Use(middleware.Recover())
-	//e.GET("/api/contact", GetContact)
-	//e.POST("/api/contact", CreateContact)
-	//
-	//// セッティング
-	//echoLambda = echoadapter.New(e)
 }
 
 func main() {
-	slog.Info("Goアプリ開始")
-	lambda.Start(HandleRequest)
-}
-
-func HandleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-	slog.Info("HandlerRequest")
-	return events.APIGatewayProxyResponse{
-		Body:       "Hello Go Go Go",
-		Headers:    nil,
-		StatusCode: 200}, nil
+	init, err := NewInitialize()
+	if err != nil {
+		slog.Error(err.Error(), "message", "初期化失敗")
+	}
+	if os.Getenv("ENV") == "dev" {
+		slog.Info("開発環境")
+		e := echo.New()
+		//e.POST("/callback", init.LambdaHandler.LineHandler.EventHandler)
+		e.POST("/api/contact", init.LambdaHandler.LineHandler.SendContactMessageEcho)
+		e.Logger.Fatal(e.Start(":8080"))
+	} else {
+		slog.Info("本番環境")
+		lambda.Start(init.LambdaHandler.HandleRequest)
+	}
 }
