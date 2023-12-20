@@ -10,6 +10,6 @@ jobs:
       - uses: actions/checkout@v3
 
       # Docker イメージを buildする
-      - name: build and push docker image to ecr
+      - name: build docker image
         run: |
           docker build .
