@@ -4,10 +4,10 @@ services:
   app:
     build:
       context: .
-      dockerfile: Docker/Dockerfile.develop
+      dockerfile: Dockerfile
     tty: true
     stdin_open: true
-    command: go run main.go
+#    command: go run main.go
     volumes:
       - ./src:/go/merubo/src
     ports:
