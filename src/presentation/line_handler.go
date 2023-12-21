@@ -22,35 +22,20 @@ func NewLineHandler(logger *slog.Logger, lineBot *messaging_api.MessagingApiAPI)
 	return lineHandler
 }
 
-// SendContactMessageEcho echo用
-func (LineHandler *LineHandler) SendContactMessageEcho(e echo.Context) (err error) {
+func (LineHandler *LineHandler) SendContactMessage(e echo.Context) (err error) {
+	LineHandler.logger.Info("SendContactMessage 開始")
 	contactBody := &request_model.ContactRequestModel{}
 	if err := e.Bind(contactBody); err != nil {
 		LineHandler.logger.Error(err.Error(), "message", "ContactBodyのBindに失敗しました。")
 		return err
 	}
 
-	err = SendMessage(contactBody, LineHandler.lineBot)
-	if err != nil {
-		LineHandler.logger.Error(err.Error(), "message", "メッセージの送信に失敗しました。")
-	}
-	return err
-}
-
-// SendContactMessageLambda Lambda用
-func (LineHandler *LineHandler) SendContactMessageLambda(body *request_model.ContactRequestModel) (err error) {
-	err = SendMessage(body, LineHandler.lineBot)
-	return err
-}
-
-func SendMessage(contactBody *request_model.ContactRequestModel, lineBot *messaging_api.MessagingApiAPI) (err error) {
-	//メッセージ作成
 	replyMessage := createResponseMessage(contactBody)
 
-	lineBot.PushMessage(
+	message, err := LineHandler.lineBot.PushMessage(
 		&messaging_api.PushMessageRequest{
 			// 自分のlineIdを入れる。
-			To: "U9da059653faa1b08c307f051641517f3",
+			To: os.Getenv("OWNER_LINE_ID"),
 			Messages: []messaging_api.MessageInterface{
 				messaging_api.TextMessage{
 					Text: replyMessage,
@@ -58,7 +43,12 @@ func SendMessage(contactBody *request_model.ContactRequestModel, lineBot *messag
 			},
 		}, "",
 	)
-	return err
+	if err != nil {
+		LineHandler.logger.Error(err.Error(), "message", "メッセージの送信に失敗しました。")
+		return
+	}
+	LineHandler.logger.Info("SendContactMessage 終了", "message", message)
+	return
 }
 
 func createResponseMessage(contactBody *request_model.ContactRequestModel) (replyMessage string) {
