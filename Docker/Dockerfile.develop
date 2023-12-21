@@ -3,6 +3,7 @@ WORKDIR /go/merubo/
 COPY src ./src
 COPY go.mod go.sum ./
 RUN apk update && apk --no-cache add git
-RUN go mod tidy
+RUN go mod tidy && go install github.com/cosmtrek/air@v1.29.0
 WORKDIR /go/merubo/src
+CMD ["air", "-c", ".air.toml"]
 EXPOSE 80
