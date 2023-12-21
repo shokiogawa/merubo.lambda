@@ -7,6 +7,8 @@ import (
 	"github.com/line/line-bot-sdk-go/v8/linebot/webhook"
 	"log/slog"
 	"merubo.lambda/src/presentation/client_model/request_model"
+	"merubo.lambda/src/presentation/client_model/response_model"
+	"net/http"
 	"os"
 )
 
@@ -22,11 +24,12 @@ func NewLineHandler(logger *slog.Logger, lineBot *messaging_api.MessagingApiAPI)
 	return lineHandler
 }
 
+// SendContactMessage 問い合わせメッセージを送信
 func (LineHandler *LineHandler) SendContactMessage(e echo.Context) (err error) {
-	LineHandler.logger.Info("SendContactMessage 開始")
+	LineHandler.logger.Info("SendContactMessage", "MessageTemplate", "開始")
 	contactBody := &request_model.ContactRequestModel{}
 	if err := e.Bind(contactBody); err != nil {
-		LineHandler.logger.Error(err.Error(), "message", "ContactBodyのBindに失敗しました。")
+		LineHandler.logger.Error(err.Error(), "MessageTemplate", "ContactBodyのBindに失敗しました。")
 		return err
 	}
 
@@ -44,11 +47,13 @@ func (LineHandler *LineHandler) SendContactMessage(e echo.Context) (err error) {
 		}, "",
 	)
 	if err != nil {
-		LineHandler.logger.Error(err.Error(), "message", "メッセージの送信に失敗しました。")
+		LineHandler.logger.Error(err.Error(), "MessageTemplate", "メッセージの送信に失敗しました。")
 		return
 	}
-	LineHandler.logger.Info("SendContactMessage 終了", "message", message)
-	return
+	LineHandler.logger.Info("SendContactMessage", "MessageTemplate", "終了", "ContactDetail", message)
+
+	response := response_model.SuccessResponseModel{Message: "問い合わせを管理者に送信しました。"}
+	return e.JSON(http.StatusCreated, response)
 }
 
 func createResponseMessage(contactBody *request_model.ContactRequestModel) (replyMessage string) {
