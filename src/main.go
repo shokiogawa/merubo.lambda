@@ -8,6 +8,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"log/slog"
+	"net/http"
 )
 
 // 参考
@@ -27,12 +28,12 @@ func init() {
 
 func PostContact(e echo.Context) (err error) {
 	slog.Info("PostContact")
-	return
+	return e.String(http.StatusCreated, "PostContact success")
 }
 
 func GetContact(e echo.Context) (err error) {
 	slog.Info("GetContact")
-	return
+	return e.String(http.StatusOK, "GetContent success")
 }
 
 func Handler(ctx context.Context, req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
