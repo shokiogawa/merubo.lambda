@@ -23,6 +23,7 @@ func NewLineHandler(logger *slog.Logger, lineBot *messaging_api.MessagingApiAPI)
 }
 
 func (LineHandler *LineHandler) SendContactMessage(e echo.Context) (err error) {
+	LineHandler.logger.Info("SendContactMessage 開始")
 	contactBody := &request_model.ContactRequestModel{}
 	if err := e.Bind(contactBody); err != nil {
 		LineHandler.logger.Error(err.Error(), "message", "ContactBodyのBindに失敗しました。")
@@ -31,10 +32,10 @@ func (LineHandler *LineHandler) SendContactMessage(e echo.Context) (err error) {
 
 	replyMessage := createResponseMessage(contactBody)
 
-	LineHandler.lineBot.PushMessage(
+	message, err := LineHandler.lineBot.PushMessage(
 		&messaging_api.PushMessageRequest{
 			// 自分のlineIdを入れる。
-			To: "U9da059653faa1b08c307f051641517f3",
+			To: os.Getenv("OWNER_LINE_ID"),
 			Messages: []messaging_api.MessageInterface{
 				messaging_api.TextMessage{
 					Text: replyMessage,
@@ -44,8 +45,10 @@ func (LineHandler *LineHandler) SendContactMessage(e echo.Context) (err error) {
 	)
 	if err != nil {
 		LineHandler.logger.Error(err.Error(), "message", "メッセージの送信に失敗しました。")
+		return
 	}
-	return err
+	LineHandler.logger.Info("SendContactMessage 終了", "message", message)
+	return
 }
 
 func createResponseMessage(contactBody *request_model.ContactRequestModel) (replyMessage string) {

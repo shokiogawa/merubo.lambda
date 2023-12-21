@@ -26,12 +26,15 @@ func init() {
 	// 開発環境の場合は、8080ポートにアクセス
 	if os.Getenv("ENV") == "dev" {
 		e.Logger.Fatal(e.Start(":8080"))
+	} else {
+		echoLambda = echoadapter.New(e)
 	}
-	echoLambda = echoadapter.New(e)
 }
 
 func main() {
-	lambda.Start(Handler)
+	if os.Getenv("ENV") != "dev" {
+		lambda.Start(Handler)
+	}
 }
 
 func Handler(ctx context.Context, req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
