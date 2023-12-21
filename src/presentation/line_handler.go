@@ -22,32 +22,16 @@ func NewLineHandler(logger *slog.Logger, lineBot *messaging_api.MessagingApiAPI)
 	return lineHandler
 }
 
-// SendContactMessageEcho echo用
-func (LineHandler *LineHandler) SendContactMessageEcho(e echo.Context) (err error) {
+func (LineHandler *LineHandler) SendContactMessage(e echo.Context) (err error) {
 	contactBody := &request_model.ContactRequestModel{}
 	if err := e.Bind(contactBody); err != nil {
 		LineHandler.logger.Error(err.Error(), "message", "ContactBodyのBindに失敗しました。")
 		return err
 	}
 
-	err = SendMessage(contactBody, LineHandler.lineBot)
-	if err != nil {
-		LineHandler.logger.Error(err.Error(), "message", "メッセージの送信に失敗しました。")
-	}
-	return err
-}
-
-// SendContactMessageLambda Lambda用
-func (LineHandler *LineHandler) SendContactMessageLambda(body *request_model.ContactRequestModel) (err error) {
-	err = SendMessage(body, LineHandler.lineBot)
-	return err
-}
-
-func SendMessage(contactBody *request_model.ContactRequestModel, lineBot *messaging_api.MessagingApiAPI) (err error) {
-	//メッセージ作成
 	replyMessage := createResponseMessage(contactBody)
 
-	lineBot.PushMessage(
+	LineHandler.lineBot.PushMessage(
 		&messaging_api.PushMessageRequest{
 			// 自分のlineIdを入れる。
 			To: "U9da059653faa1b08c307f051641517f3",
@@ -58,6 +42,9 @@ func SendMessage(contactBody *request_model.ContactRequestModel, lineBot *messag
 			},
 		}, "",
 	)
+	if err != nil {
+		LineHandler.logger.Error(err.Error(), "message", "メッセージの送信に失敗しました。")
+	}
 	return err
 }
 

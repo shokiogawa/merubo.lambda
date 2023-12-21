@@ -6,16 +6,13 @@ import (
 )
 
 type Initialize struct {
-	LambdaHandler *presentation.LambdaHandler
+	LineHandler *presentation.LineHandler
 }
 
 func NewInitialize() (init *Initialize, err error) {
 	init = new(Initialize)
 	logger := lib.NewLogger()
 	lineBot, err := lib.NewLineBot()
-	lineHandler := presentation.NewLineHandler(logger, lineBot)
-
-	lambdaHandler := presentation.NewLambdaHandler(lineHandler)
-	init.LambdaHandler = lambdaHandler
+	init.LineHandler = presentation.NewLineHandler(logger, lineBot)
 	return
 }
