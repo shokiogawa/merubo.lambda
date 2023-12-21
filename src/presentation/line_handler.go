@@ -30,7 +30,8 @@ func (LineHandler *LineHandler) SendContactMessage(e echo.Context) (err error) {
 	contactBody := &request_model.ContactRequestModel{}
 	if err := e.Bind(contactBody); err != nil {
 		LineHandler.logger.Error(err.Error(), "MessageTemplate", "ContactBodyのBindに失敗しました。")
-		return err
+		response := response_model.ResponseModel{StatusCode: http.StatusInternalServerError, Message: "問い合わせ内容が不正です。"}
+		return e.JSON(http.StatusBadRequest, response)
 	}
 
 	replyMessage := createResponseMessage(contactBody)
@@ -48,11 +49,12 @@ func (LineHandler *LineHandler) SendContactMessage(e echo.Context) (err error) {
 	)
 	if err != nil {
 		LineHandler.logger.Error(err.Error(), "MessageTemplate", "メッセージの送信に失敗しました。")
-		return
+		response := response_model.ResponseModel{StatusCode: http.StatusInternalServerError, Message: "メッセージの送信に失敗しました。"}
+		return e.JSON(http.StatusInternalServerError, response)
 	}
 	LineHandler.logger.Info("SendContactMessage", "MessageTemplate", "終了", "ContactDetail", message)
 
-	response := response_model.SuccessResponseModel{Message: "問い合わせを管理者に送信しました。"}
+	response := response_model.ResponseModel{StatusCode: http.StatusCreated, Message: "問い合わせを管理者に送信しました。"}
 	return e.JSON(http.StatusCreated, response)
 }
 
