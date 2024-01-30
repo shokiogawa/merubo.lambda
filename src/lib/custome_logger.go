@@ -12,3 +12,6 @@ func NewLogger() (logger *slog.Logger) {
 
 // testb
 func testb(){}
+
+// テストA
+func testA(){}
