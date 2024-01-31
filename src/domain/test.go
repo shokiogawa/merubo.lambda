@@ -1,1 +1,5 @@
-type Test struct {}
+package test
+
+type Test struct {
+	a string
+}
