@@ -1,1 +1,5 @@
-type Test struct {}
+package domain
+
+type Test struct {
+	b string
+}
