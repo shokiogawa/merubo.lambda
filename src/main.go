@@ -35,3 +35,7 @@ func HandleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (
 		Headers:    nil,
 		StatusCode: 200}, nil
 }
+
+func TestFunc() {
+
+}
